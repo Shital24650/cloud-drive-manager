@@ -17,5 +17,11 @@ export const routes: Routes = [
     path: '**',
     redirectTo: ''
   },
+  {
+path:"share/:id",
+loadComponent:()=>import(
+"./components/share-file/share-file.component"
+).then(m=>m.ShareFileComponent)
+},
 
 ];
