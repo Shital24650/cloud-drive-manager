@@ -1,28 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
-selector: 'app-share-file',
-template: `
-<div style="padding:40px;text-align:center">
+  selector: 'app-share-file',
+  template: 
+    <div style="text-align:center;margin-top:40px">
 
 <h2>Shared File</h2>
 
-<p>File ID: {{fileId}}</p>
-
-<p>Here you can load file preview or download.</p>
+<a *ngIf="fileUrl" [href]="fileUrl" target="_blank">
+Download / View File
+</a>
 
 </div>
-`
 })
-export class ShareFileComponent{
+export class ShareFileComponent implements OnInit {
 
-fileId:string | null = null;
+  fileUrl: string | null = null;
 
-constructor(private route:ActivatedRoute){
+  constructor(
+    private route: ActivatedRoute,
+    private storage: StorageService
+  ) {}
 
-this.fileId = this.route.snapshot.paramMap.get("id");
+  ngOnInit() {
 
-}
+    const fileId = this.route.snapshot.paramMap.get('id');
 
+    if(fileId){
+      const { data } = this.storage.supabase
+        .storage
+        .from('drive-files')
+        .getPublicUrl(fileId);
+
+      this.fileUrl = data.publicUrl;
+    }
+  }
 }
